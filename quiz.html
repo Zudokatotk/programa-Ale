@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cuestionario</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <h1>📝 Cuestionario – Unidad 1</h1>
+
+  <form id="quizForm">
+
+    <!-- Pregunta 1 -->
+    <div class="question">
+      <p>1. ¿Cuál es una característica de los seres vivos?</p>
+      <label><input type="checkbox" name="q1" value="a"> Metabolismo</label><br>
+      <label><input type="checkbox" name="q1" value="b"> Oxidación del hierro</label><br>
+      <label><input type="checkbox" name="q1" value="c"> Crecimiento</label>
+    </div>
+
+    <!-- Pregunta 2 -->
+    <div class="question">
+      <p>2. ¿Cuál es el nivel más pequeño de organización biológica?</p>
+      <label><input type="checkbox" name="q2" value="a"> Célula</label><br>
+      <label><input type="checkbox" name="q2" value="b"> Átomo</label><br>
+      <label><input type="checkbox" name="q2" value="c"> Tejido</label>
+    </div>
+
+    <button type="button" onclick="calcularResultado()">Finalizar cuestionario</button>
+  </form>
+
+  <div id="resultado"></div>
+
+  <script src="js/quiz.js"></script>
+</body>
+</html>
