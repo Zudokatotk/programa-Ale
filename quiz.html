@@ -1,37 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Cuestionario</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body class="bg">
+  <main class="wrap">
 
-  <h1>📝 Cuestionario – Unidad 1</h1>
+    <header class="head">
+      <h1>🧠 Quiz</h1>
+      <div class="meta">
+        <span id="unitTag" class="pill"></span>
+        <span id="progress" class="pill"></span>
+      </div>
+    </header>
 
-  <form id="quizForm">
+    <section id="quizCard" class="card">
+      <h2 id="qTitle"></h2>
+      <div id="options" class="options"></div>
 
-    <!-- Pregunta 1 -->
-    <div class="question">
-      <p>1. ¿Cuál es una característica de los seres vivos?</p>
-      <label><input type="checkbox" name="q1" value="a"> Metabolismo</label><br>
-      <label><input type="checkbox" name="q1" value="b"> Oxidación del hierro</label><br>
-      <label><input type="checkbox" name="q1" value="c"> Crecimiento</label>
-    </div>
+      <div id="feedback" class="feedback hidden"></div>
 
-    <!-- Pregunta 2 -->
-    <div class="question">
-      <p>2. ¿Cuál es el nivel más pequeño de organización biológica?</p>
-      <label><input type="checkbox" name="q2" value="a"> Célula</label><br>
-      <label><input type="checkbox" name="q2" value="b"> Átomo</label><br>
-      <label><input type="checkbox" name="q2" value="c"> Tejido</label>
-    </div>
+      <div class="actions">
+        <button id="next" class="btn">Siguiente</button>
+        <button id="finish" class="btn btn-ghost hidden">Finalizar</button>
+      </div>
+    </section>
 
-    <button type="button" onclick="calcularResultado()">Finalizar cuestionario</button>
-  </form>
+    <section id="resultCard" class="card hidden">
+      <h2>📊 Resultados</h2>
+      <p id="score"></p>
 
-  <div id="resultado"></div>
+      <h3>❌ En qué te equivocaste</h3>
+      <div id="errors"></div>
 
+      <div class="actions">
+        <a class="btn" href="index.html">Volver</a>
+        <a class="btn btn-ghost" href="quiz.html" onclick="location.reload()">Reintentar</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/questions.js"></script>
   <script src="js/quiz.js"></script>
 </body>
 </html>

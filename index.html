@@ -1,19 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Programa de Estudio</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz de Ingreso (Biología)</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<body class="bg">
+  <main class="wrap">
+    <header class="head">
+      <h1>🧪 Quiz de Ingreso (Biología)</h1>
+      <p>Unidades 1–9 · Preguntas aleatorias · Puntaje /100</p>
+    </header>
 
-  <h1>📘 Programa de Estudio – Biología</h1>
+    <section class="card">
+      <h2>Configurar cuestionario</h2>
 
-  <p>Selecciona una actividad:</p>
+      <div class="grid">
+        <div class="field">
+          <label>Número de preguntas</label>
+          <select id="count">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50" selected>50</option>
+          </select>
+        </div>
 
-  <ul>
-    <li><a href="quiz.html">📝 Cuestionario – Unidad 1</a></li>
-  </ul>
+        <div class="field">
+          <label>Unidad</label>
+          <select id="unit">
+            <option value="all" selected>Todas (1–9)</option>
+            <option value="1">Unidad 1</option>
+            <option value="2">Unidad 2</option>
+            <option value="3">Unidad 3</option>
+            <option value="4">Unidad 4</option>
+            <option value="5">Unidad 5</option>
+            <option value="6">Unidad 6</option>
+            <option value="7">Unidad 7</option>
+            <option value="8">Unidad 8</option>
+            <option value="9">Unidad 9</option>
+          </select>
+        </div>
 
+        <div class="field">
+          <label>Barajar preguntas</label>
+          <select id="shuffleQ">
+            <option value="yes" selected>Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Barajar opciones</label>
+          <select id="shuffleA">
+            <option value="yes" selected>Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Modo</label>
+          <select id="mode">
+            <option value="exam" selected>Examen (solo resultado al final)</option>
+            <option value="practice">Práctica (te dice al instante)</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="start" class="btn">Iniciar</button>
+
+      <div class="tip">
+        Tip: Para agregar más preguntas, solo añade objetos en <code>js/questions.js</code> con <b>unit: 1..9</b>.
+      </div>
+    </section>
+
+    <footer class="foot">Hecho para estudiar sin perder la cabeza ✅</footer>
+  </main>
+
+  <script>
+    document.getElementById("start").addEventListener("click", () => {
+      const settings = {
+        count: +document.getElementById("count").value,
+        unit: document.getElementById("unit").value,
+        shuffleQ: document.getElementById("shuffleQ").value,
+        shuffleA: document.getElementById("shuffleA").value,
+        mode: document.getElementById("mode").value,
+      };
+      localStorage.setItem("bioQuizSettings", JSON.stringify(settings));
+      window.location.href = "quiz.html";
+    });
+  </script>
 </body>
 </html>
