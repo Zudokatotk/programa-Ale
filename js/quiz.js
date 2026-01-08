@@ -1,4 +1,4 @@
-// questions.js debe exponer: window.QUESTIONS = [ {unit: 1..9, question, options, answer, explanation} ]
+// questions.js expone: window.QUESTION_BANK = [ {unit, type:"single|multi", q, options, answer:[idx...], explain} ]
 
 const settings = JSON.parse(localStorage.getItem("bioQuizSettings") || "{}");
 const MODE = settings.mode || "exam";
@@ -29,16 +29,22 @@ function shuffle(arr){
   return a;
 }
 
-let pool = (window.QUESTIONS || []).filter(q => {
+// 1) Tomar banco real
+const BANK = Array.isArray(window.QUESTION_BANK) ? window.QUESTION_BANK : [];
+console.log("Preguntas cargadas:", BANK.length);
+
+// 2) Filtrar por unidad
+let pool = BANK.filter(q => {
   if (UNIT === "all") return true;
   return String(q.unit) === String(UNIT);
 });
 
 unitTagEl.textContent = UNIT === "all" ? "Unidades 1–9" : `Unidad ${UNIT}`;
 
+// Barajar preguntas
 if (SHUFFLE_Q) pool = shuffle(pool);
 
-// si piden más de las que hay, usamos las que existan
+// Si piden más de las que hay, usar las disponibles
 const selected = pool.slice(0, Math.min(COUNT, pool.length));
 
 let idx = 0;
@@ -46,24 +52,38 @@ let correct = 0;
 let wrong = [];
 let answered = false;
 
-render();
+if (selected.length === 0) {
+  // Mensaje útil si quedó vacío
+  qTitle.textContent = "No hay preguntas para esa selección 😵‍💫";
+  progressEl.textContent = "Pregunta 0 / 0";
+  optionsEl.innerHTML = `<div class="tip">Revisa que <code>questions.js</code> no tenga errores y que las preguntas tengan <b>unit</b> correcto (1..9).</div>`;
+  nextBtn.classList.add("hidden");
+  finishBtn.classList.add("hidden");
+} else {
+  render();
+}
 
 function render(){
   const q = selected[idx];
   progressEl.textContent = `Pregunta ${idx+1} / ${selected.length}`;
 
-  qTitle.textContent = q.question;
+  // Tu banco usa q en vez de question
+  qTitle.textContent = q.q;
+
   feedbackEl.classList.add("hidden");
   feedbackEl.textContent = "";
   answered = false;
 
-  // construir opciones (y barajarlas si toca)
+  // Construir opciones (y barajarlas si toca)
   let opts = q.options.map((text, i) => ({ text, i }));
   if (SHUFFLE_A) opts = shuffle(opts);
 
-  optionsEl.innerHTML = opts.map((o, k) => `
+  // single => radio | multi => checkbox
+  const inputType = (q.type === "multi") ? "checkbox" : "radio";
+
+  optionsEl.innerHTML = opts.map((o) => `
     <label class="opt">
-      <input type="radio" name="opt" value="${o.i}">
+      <input type="${inputType}" name="opt" value="${o.i}">
       <div>${o.text}</div>
     </label>
   `).join("");
@@ -75,22 +95,41 @@ function render(){
 nextBtn.addEventListener("click", () => submitAndNext(false));
 finishBtn.addEventListener("click", () => submitAndNext(true));
 
+function getSelectedIndexes(q){
+  if (q.type === "multi") {
+    return Array.from(document.querySelectorAll('input[name="opt"]:checked')).map(x => Number(x.value));
+  } else {
+    const chosen = document.querySelector('input[name="opt"]:checked');
+    return chosen ? [Number(chosen.value)] : [];
+  }
+}
+
+function sameSet(a, b){
+  const A = [...a].sort().join(",");
+  const B = [...b].sort().join(",");
+  return A === B;
+}
+
 function submitAndNext(isFinish){
-  const chosen = document.querySelector('input[name="opt"]:checked');
-  if (!chosen) return alert("Elige una opción");
-
   const q = selected[idx];
-  const ans = Number(chosen.value);
+  const chosenIdxs = getSelectedIndexes(q);
 
-  const ok = ans === q.answer;
+  if (chosenIdxs.length === 0) return alert("Elige una opción");
+
+  // q.answer en tu banco es arreglo (ej: [0]) incluso para single
+  const ok = sameSet(chosenIdxs, q.answer);
+
   if (ok) correct++;
   else {
+    const userText = chosenIdxs.map(i => q.options[i]).join(", ");
+    const correctText = q.answer.map(i => q.options[i]).join(", ");
+
     wrong.push({
       unit: q.unit,
-      question: q.question,
-      user: q.options[ans],
-      correct: q.options[q.answer],
-      explanation: q.explanation || ""
+      question: q.q,
+      user: userText,
+      correct: correctText,
+      explanation: q.explain || ""
     });
   }
 
@@ -101,9 +140,9 @@ function submitAndNext(isFinish){
     feedbackEl.innerHTML = ok
       ? `<span class="good">Correcto ✅</span>`
       : `<span class="bad">Incorrecto ❌</span><br>
-         Correcta: <span class="good">${q.options[q.answer]}</span>
-         ${q.explanation ? `<br><i>${q.explanation}</i>` : ""}`;
-    return; // en práctica, primero ve el feedback, luego vuelve a presionar
+         Correcta: <span class="good">${q.answer.map(i => q.options[i]).join(", ")}</span>
+         ${q.explain ? `<br><i>${q.explain}</i>` : ""}`;
+    return; // en práctica, primero ve el feedback, luego presiona otra vez
   }
 
   if (idx < selected.length - 1 && !isFinish) {
